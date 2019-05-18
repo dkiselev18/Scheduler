@@ -31,8 +31,8 @@ class Events(models.Model):
     Name = models.CharField(max_length=300, verbose_name="Название мероприятия")
     StartDate = models.DateField(verbose_name="Дата начала мероприятия")
     EndDate = models.DateField(verbose_name="Дата окончания мероприятия")
-    StartTime = models.TimeField(verbose_name="Время начала мероприятия")
-    EndTime = models.TimeField(verbose_name="Время окончания мероприятия")
+    StartTime = models.TimeField(verbose_name="Время начала мероприятия", null=True, blank=True)
+    EndTime = models.TimeField(verbose_name="Время окончания мероприятия", null=True, blank=True)
 
     def __str__(self):
         return self.Name
