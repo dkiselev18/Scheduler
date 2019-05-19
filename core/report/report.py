@@ -1,5 +1,5 @@
 from docx import Document
-from ..models import Events
+from ..models import Event
 
 
 class Report:
@@ -16,7 +16,7 @@ class Report:
         return self.document
 
     def _change_table(self):
-        events = Events.objects.filter(StartDate__day=self.day, StartDate__month=self.month, StartDate__year=self.year)
+        events = Event.objects.filter(StartDate__day=self.day, StartDate__month=self.month, StartDate__year=self.year)
         table = self.document.tables[0]
         i = 1
         row = table.add_row()

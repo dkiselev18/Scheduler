@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class MilitaryUnits(models.Model):
+class MilitaryUnit(models.Model):
     Name = models.CharField(max_length=200, verbose_name="Название воинской части")
     Number = models.IntegerField(verbose_name="Номер воинской части", null=True, blank=True)
 
@@ -13,8 +13,8 @@ class MilitaryUnits(models.Model):
         verbose_name_plural = "1. Воинские части"
 
 
-class ResponsiblePersons(models.Model):
-    MilitaryUnitsID = models.ForeignKey(MilitaryUnits, verbose_name="Название воинской части", on_delete=models.CASCADE)
+class ResponsiblePerson(models.Model):
+    MilitaryUnitsID = models.ForeignKey(MilitaryUnit, verbose_name="Название воинской части", on_delete=models.CASCADE)
     Name = models.CharField(max_length=200, verbose_name="Наименование должности ответственного лица")
     ShortName = models.CharField(max_length=200, verbose_name="Краткое наименование должности ответственного лица")
 
@@ -26,8 +26,8 @@ class ResponsiblePersons(models.Model):
         verbose_name_plural = "2. Ответственные исполнители"
 
 
-class Events(models.Model):
-    ResponsiblePersonsID = models.ForeignKey(ResponsiblePersons, verbose_name="Ответственный", on_delete=models.CASCADE)
+class Event(models.Model):
+    ResponsiblePersonsID = models.ForeignKey(ResponsiblePerson, verbose_name="Ответственный", on_delete=models.CASCADE)
     Name = models.CharField(max_length=300, verbose_name="Название мероприятия")
     StartDate = models.DateField(verbose_name="Дата начала мероприятия")
     EndDate = models.DateField(verbose_name="Дата окончания мероприятия")

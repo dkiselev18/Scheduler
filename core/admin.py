@@ -2,6 +2,6 @@ from django.contrib import admin
 from .models import *
 
 
-admin.site.register(MilitaryUnits)
-admin.site.register(Events)
-admin.site.register(ResponsiblePersons)
+admin.site.register(MilitaryUnit)
+admin.site.register(Event)
+admin.site.register(ResponsiblePerson)
