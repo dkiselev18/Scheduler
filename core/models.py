@@ -1,42 +1,68 @@
 from django.db import models
+from django.utils.timezone import now
+import uuid
 
 
-class MilitaryUnit(models.Model):
-    Name = models.CharField(max_length=200, verbose_name="Название воинской части")
-    Number = models.IntegerField(verbose_name="Номер воинской части", null=True, blank=True)
-
-    def __str__(self):
-        return self.Name
+class SchedulerModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created = models.DateTimeField(verbose_name="Время создание записи", default=now, editable=False)
+    updated = models.DateTimeField(verbose_name="Время последего изменения записи", default=created)
 
     class Meta:
-        verbose_name = "Воинские части"
-        verbose_name_plural = "1. Воинские части"
+        abstract = True
 
 
-class ResponsiblePerson(models.Model):
-    MilitaryUnitsID = models.ForeignKey(MilitaryUnit, verbose_name="Название воинской части", on_delete=models.CASCADE)
-    Name = models.CharField(max_length=200, verbose_name="Наименование должности ответственного лица")
-    ShortName = models.CharField(max_length=200, verbose_name="Краткое наименование должности ответственного лица")
+class MilitaryUnit(SchedulerModel):
+    name = models.CharField(max_length=200, verbose_name="Воинская часть")
 
     def __str__(self):
-        return self.ShortName
+        return self.name
+
+    class Meta:
+        verbose_name = "Воинская часть"
+        verbose_name_plural = "1. Воинская часть"
+
+
+class ResponsiblePerson(SchedulerModel):
+    name = models.CharField(max_length=200, verbose_name="Наименование должности ответственного лица")
+    short_name = models.CharField(max_length=200, verbose_name="Краткое наименование должности ответственного лица")
+
+    def __str__(self):
+        return self.short_name
 
     class Meta:
         verbose_name = "Ответственные исполнители"
         verbose_name_plural = "2. Ответственные исполнители"
 
 
-class Event(models.Model):
-    ResponsiblePersonsID = models.ForeignKey(ResponsiblePerson, verbose_name="Ответственный", on_delete=models.CASCADE)
-    Name = models.CharField(max_length=300, verbose_name="Название мероприятия")
-    StartDate = models.DateField(verbose_name="Дата начала мероприятия")
-    EndDate = models.DateField(verbose_name="Дата окончания мероприятия")
-    StartTime = models.TimeField(verbose_name="Время начала мероприятия", null=True, blank=True)
-    EndTime = models.TimeField(verbose_name="Время окончания мероприятия", null=True, blank=True)
+class EventDef(SchedulerModel):
+    """
+    This model represents all event types.
+    """
+    name = models.CharField(max_length=300, verbose_name="Название мероприятия")
 
-    def __str__(self):
-        return self.Name
+
+class TimeSlot(SchedulerModel):
+    """
+    This model represents time slots for events (Event model).
+    """
+    start_date = models.DateField(verbose_name="Дата начала мероприятия")
+    end_date = models.DateField(verbose_name="Дата окончания мероприятия")
+    start_time = models.TimeField(null=True, blank=True, verbose_name="Время окончания мероприятия")
+    end_time = models.TimeField(null=True, blank=True, verbose_name="Время окончания мероприятия")
+
+
+class Event(SchedulerModel):
+    militaryUnit = models.ForeignKey(MilitaryUnit, verbose_name="Подразделение", on_delete=models.CASCADE)
+    eventDef = models.ForeignKey(EventDef, verbose_name="Название мероприятия", on_delete=models.CASCADE)
+    responsiblePersons = models.ForeignKey(ResponsiblePerson, verbose_name="Ответственный", on_delete=models.CASCADE,
+                                           null=True, blank=True)
+    timeSlot = models.ForeignKey(TimeSlot, unique=True, verbose_name="Время проведения мероприятия")
+    template_event = fk
 
     class Meta:
         verbose_name = "Основные мероприятия"
         verbose_name_plural = "3. Основные мероприятия"
+
+class EventPattern():
+
